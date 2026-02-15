@@ -4,3 +4,4 @@ pymongo
 motor
 passlib[bcrypt]
 python-dotenv
+pydantic[email]
