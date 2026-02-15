@@ -71,7 +71,6 @@ The server will start at: **http://127.0.0.1:8000**
 Once the server is running, access the interactive API documentation:
 
 - Swagger UI: http://127.0.0.1:8000/docs
-- ReDoc: http://127.0.0.1:8000/redoc
 
 ## API Endpoints
 
@@ -193,15 +192,10 @@ Check if the server and database are running.
 }
 ```
 
-## Docker Deployment
-
-This application is available as a Docker image on Docker Hub for easy deployment.
-
-### Docker Hub
+## Docker Hub
 
 🐳 **Docker Image**: [python3101/unitecore-api](https://hub.docker.com/r/python3101/unitecore-api)
 
-### Quick Start with Docker
 
 #### 1. Pull the Image
 
@@ -225,23 +219,8 @@ docker run -p 8000:8000 \
 - **API Documentation**: http://localhost:8000/docs
 - **Health Check**: http://localhost:8000/health
 
-### Using Docker Compose (For Development)
-
-If you have the source code, you can also use Docker Compose:
-
-```bash
-# Build and run
-docker-compose up --build
-
-# Run in background
-docker-compose up -d
-
-# Stop
-docker-compose down
-```
 
 ## Testing
-
 Use any of these tools to test the API:
 
 1. **Swagger UI** (built-in): http://127.0.0.1:8000/docs
