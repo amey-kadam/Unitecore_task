@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 from bson import ObjectId
+from typing import List
 from app.models.company import CompanyCreate, CompanyResponse
 from app.database import get_companies_collection
 from app.utils.security import hash_password
@@ -36,3 +37,16 @@ async def create_company(company: CompanyCreate):
     created_company.pop("hashed_password", None)
     
     return CompanyResponse.model_validate(created_company)
+
+
+@router.get("/", response_model=List[CompanyResponse])
+async def get_all_companies():
+    companies_collection = get_companies_collection()
+    
+    companies = list(companies_collection.find())
+    
+    for company in companies:
+        company["_id"] = str(company["_id"])
+        company.pop("hashed_password", None)
+    
+    return [CompanyResponse.model_validate(company) for company in companies]
