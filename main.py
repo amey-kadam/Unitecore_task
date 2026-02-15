@@ -13,12 +13,25 @@ app = FastAPI(
 
 app.include_router(company_router)
 
+@app.on_event("startup")
+async def startup_event():
+    try:
+        companies_collection = get_companies_collection()
+        companies_collection.create_index("email", unique=True)
+        companies_collection.create_index("mobile", unique=True)
+        print("MongoDB indexes created successfully")
+    except Exception as e:
+        print(f"Warning: Could not create MongoDB indexes: {e}")
+
+
+
 @app.get("/health")
 def health_check():
-    """Health check endpoint to verify server and database connection"""
+
     return {
         "status": "ok",
         "message": "Server is running",
         "mongo_url_loaded": bool(MONGO_URL),
         "db_name": DB_NAME
     }
+

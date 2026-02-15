@@ -43,7 +43,6 @@ async def create_company(company: CompanyCreate):
 async def get_all_companies(skip: int = 0, limit: int = 10):
     companies_collection = get_companies_collection()
     
-    # Validate pagination parameters
     if skip < 0:
         raise HTTPException(status_code=400, detail="Skip must be >= 0")
     if limit < 1 or limit > 100:
