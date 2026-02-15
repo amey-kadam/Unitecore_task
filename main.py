@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.database import get_db, get_companies_collection
+from app.routes.company import router as company_router
 from config import MONGO_URL, DB_NAME
 
 app = FastAPI(
@@ -9,6 +10,8 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+app.include_router(company_router)
 
 @app.get("/health")
 def health_check():

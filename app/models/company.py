@@ -130,9 +130,9 @@ class CompanyResponse(BaseModel):
     mobile: str
     address: str
     
-    class Config:
-        populate_by_name = True
-        json_schema_extra = {
+    model_config = {
+        "populate_by_name": True,
+        "json_schema_extra": {
             "example": {
                 "_id": "507f1f77bcf86cd799439011",
                 "company_name": "Tech Solutions Inc.",
@@ -141,6 +141,7 @@ class CompanyResponse(BaseModel):
                 "address": "123 Business Street, Tech City, TC 12345"
             }
         }
+    }
 
 
 class CompanyInDB(BaseModel):
