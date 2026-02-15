@@ -193,6 +193,53 @@ Check if the server and database are running.
 }
 ```
 
+## Docker Deployment
+
+This application is available as a Docker image on Docker Hub for easy deployment.
+
+### Docker Hub
+
+🐳 **Docker Image**: [python3101/unitecore-api](https://hub.docker.com/r/python3101/unitecore-api)
+
+### Quick Start with Docker
+
+#### 1. Pull the Image
+
+```bash
+docker pull python3101/unitecore-api:latest
+```
+
+#### 2. Run the Container
+
+```bash
+docker run -p 8000:8000 \
+  -e MONGO_URL="mongodb+srv://user:pass@cluster.mongodb.net/?appName=Cluster0" \
+  -e DB_NAME="company_db" \
+  python3101/unitecore-api:latest
+```
+
+**Note:** Replace `MONGO_URL` with your actual MongoDB connection string.
+
+#### 3. Access the API
+
+- **API Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+### Using Docker Compose (For Development)
+
+If you have the source code, you can also use Docker Compose:
+
+```bash
+# Build and run
+docker-compose up --build
+
+# Run in background
+docker-compose up -d
+
+# Stop
+docker-compose down
+```
+
 ## Testing
 
 Use any of these tools to test the API:
