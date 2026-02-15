@@ -40,10 +40,16 @@ async def create_company(company: CompanyCreate):
 
 
 @router.get("/", response_model=List[CompanyResponse])
-async def get_all_companies():
+async def get_all_companies(skip: int = 0, limit: int = 10):
     companies_collection = get_companies_collection()
     
-    companies = list(companies_collection.find())
+    # Validate pagination parameters
+    if skip < 0:
+        raise HTTPException(status_code=400, detail="Skip must be >= 0")
+    if limit < 1 or limit > 100:
+        raise HTTPException(status_code=400, detail="Limit must be between 1 and 100")
+    
+    companies = list(companies_collection.find().skip(skip).limit(limit))
     
     for company in companies:
         company["_id"] = str(company["_id"])
@@ -106,3 +112,18 @@ async def update_company(id: str, company_update: CompanyUpdate):
     updated_company.pop("hashed_password", None)
     
     return CompanyResponse.model_validate(updated_company)
+
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_company(id: str):
+    companies_collection = get_companies_collection()
+    
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid company ID")
+    
+    result = companies_collection.delete_one({"_id": ObjectId(id)})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Company not found")
+    
+    return None
