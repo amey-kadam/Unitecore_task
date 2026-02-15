@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 from bson import ObjectId
 from typing import List
-from app.models.company import CompanyCreate, CompanyResponse
+from app.models.company import CompanyCreate, CompanyUpdate, CompanyResponse
 from app.database import get_companies_collection
 from app.utils.security import hash_password
 
@@ -68,3 +68,41 @@ async def get_company_by_id(id: str):
     company.pop("hashed_password", None)
     
     return CompanyResponse.model_validate(company)
+
+
+@router.put("/{id}", response_model=CompanyResponse)
+async def update_company(id: str, company_update: CompanyUpdate):
+    companies_collection = get_companies_collection()
+    
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid company ID")
+    
+    
+    update_data = company_update.model_dump(exclude_unset=True)
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    if "password" in update_data:
+        update_data["hashed_password"] = hash_password(update_data.pop("password"))
+    
+    try:
+        result = companies_collection.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": update_data}
+        )
+    except DuplicateKeyError as e:
+        if "email" in str(e):
+            raise HTTPException(status_code=400, detail="Email already exists")
+        elif "mobile" in str(e):
+            raise HTTPException(status_code=400, detail="Mobile number already exists")
+        raise HTTPException(status_code=400, detail="Duplicate entry")
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Company not found")
+    
+    updated_company = companies_collection.find_one({"_id": ObjectId(id)})
+    updated_company["_id"] = str(updated_company["_id"])
+    updated_company.pop("hashed_password", None)
+    
+    return CompanyResponse.model_validate(updated_company)
