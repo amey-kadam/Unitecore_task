@@ -50,3 +50,21 @@ async def get_all_companies():
         company.pop("hashed_password", None)
     
     return [CompanyResponse.model_validate(company) for company in companies]
+
+
+@router.get("/{id}", response_model=CompanyResponse)
+async def get_company_by_id(id: str):
+    companies_collection = get_companies_collection()
+    
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid company ID")
+    
+    company = companies_collection.find_one({"_id": ObjectId(id)})
+    
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+    
+    company["_id"] = str(company["_id"])
+    company.pop("hashed_password", None)
+    
+    return CompanyResponse.model_validate(company)
